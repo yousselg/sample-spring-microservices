@@ -1,0 +1,58 @@
+version: '3.5'
+services:
+  discovery:
+    image: yousselg/discovery-service
+    container_name: discovery-service
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+
+  gateway:
+    image: yousselg/gateway-service
+    container_name: service-gateway
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - "8765:8765"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka
+    links:
+      - discovery
+
+  zipkin-service:
+    image: yousselg/zipkin-service
+    container_name: zipkin-service
+    build:
+      context: ./zipkin-service
+      dockerfile: Dockerfile
+    ports:
+      - "9411:9411"
+
+  player-service:
+    image: yousselg/player-service
+    container_name: player-service
+    build:
+      context: ./player-service
+      dockerfile: Dockerfile
+    ports:
+      - "2222:2222"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka
+    links:
+      - discovery
+
+  game-service:
+    image: yousselg/game-service
+    container_name: game-service
+    build:
+      context: ./game-service
+      dockerfile: Dockerfile
+    ports:
+      - "3333:3333"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery:8761/eureka
+    links:
+      - discovery
